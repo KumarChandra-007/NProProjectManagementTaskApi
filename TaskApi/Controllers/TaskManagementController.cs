@@ -7,7 +7,7 @@ using SampleProjectMgmt.ResponseDTO;
 
 namespace ProjectManagement.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("taskapi")]
     [ApiController]
     public class TaskManagementController : ControllerBase
     {
