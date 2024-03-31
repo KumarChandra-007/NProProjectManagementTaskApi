@@ -29,6 +29,17 @@ namespace ProjectManagement
             // Add other services
             
             services.AddScoped<ITaskManagementServices, TaskManagementServices>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -44,7 +55,7 @@ namespace ProjectManagement
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseCors("MyAllowSpecificOrigins");
             app.UseRouting();
 
             app.UseAuthentication();
