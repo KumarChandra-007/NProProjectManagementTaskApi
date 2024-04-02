@@ -3,6 +3,7 @@ using ProjectManagement.DBContext;
 using ProjectManagement.Interfaces;
 using ProjectManagement.Model;
 using SampleProjectMgmt.ResponseDTO;
+using TaskApi.Model;
 
 namespace ProjectManagement.Services
 {
@@ -75,6 +76,11 @@ namespace ProjectManagement.Services
             }
         }
 
+        public async Task<List<ProjectBasedTaskCount>> GetTaskCount() { 
+             var result=_unitOfWork.TaskManagement.GroupBy(p => p.ProjectID)
+                   .Select(g => new ProjectBasedTaskCount{ ProjectId = g.Key, TaskCount = g.Count() });
+            return result.ToList();
+        }
         public async Task<List<TaskManagementDTO>> GetTaskDetailByProjectId(int Projectid)
         {
             try

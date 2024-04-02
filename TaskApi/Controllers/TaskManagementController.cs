@@ -54,13 +54,30 @@ namespace ProjectManagement.Controllers
             }
         }
 
-        [HttpGet("GetTaskDetailByProjectId")]
+        [HttpGet("GetTaskDetailByProjectId/{Projectid}")]
         public async Task<ActionResult<List<TaskManagementDTO>>> GetTaskDetailByProjectId(int Projectid)
         {
             try
             {
                 // Retrieve the task details by ID from the service
                 var taskDetails = await _taskManagementServices.GetTaskDetailByProjectId(Projectid);
+                // Return the task details as a success response
+                return Ok(taskDetails);
+            }
+            catch (Exception ex)
+            {
+                // Return an error response if an exception occurs during processing
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("GetTaskCount")]
+        public async Task<ActionResult<List<TaskManagementDTO>>> GetTaskCount()
+        {
+            try
+            {
+                // Retrieve the task details by ID from the service
+                var taskDetails = await _taskManagementServices.GetTaskCount();
                 // Return the task details as a success response
                 return Ok(taskDetails);
             }

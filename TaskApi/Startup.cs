@@ -58,9 +58,8 @@ namespace ProjectManagement
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCors("MyAllowSpecificOrigins");
-            app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
 

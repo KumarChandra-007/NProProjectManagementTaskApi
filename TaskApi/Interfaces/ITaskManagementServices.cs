@@ -1,4 +1,5 @@
 ﻿using SampleProjectMgmt.ResponseDTO;
+using TaskApi.Model;
 
 namespace ProjectManagement.Interfaces
 {
@@ -7,6 +8,7 @@ namespace ProjectManagement.Interfaces
         Task<List<TaskManagementDTO>> GetTaskDetails();
         Task<List<TaskManagementDTO>> GetTaskDetailById(int id);
         Task<List<TaskManagementDTO>> GetTaskDetailByProjectId(int Projectid);
+        Task<List<ProjectBasedTaskCount>> GetTaskCount();
         Task<TaskManagementDTO> SaveTaskDetail(TaskManagementDTO taskManagementDTO);
         Task DeleteTaskById(int id);
     }

@@ -23,7 +23,7 @@ namespace ProjectManagement.DBContext
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=.;Database=ProjectManagementDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=true;");
+                optionsBuilder.UseSqlServer("Server=.;Database=NPro;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=true;");
             }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
