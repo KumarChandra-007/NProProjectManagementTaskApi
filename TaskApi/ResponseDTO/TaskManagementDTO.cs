@@ -9,6 +9,7 @@
         public string Deadline { get; set; }
         public int ProjectID { get; set; }
         public int TaskCount { get; set; }
+        public bool Signoff { get; set; }
 
     }
 
