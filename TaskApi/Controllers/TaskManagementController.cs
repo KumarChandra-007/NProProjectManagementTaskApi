@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using ProjectManagement.Interfaces;
 using ProjectManagement.Services;
 using SampleProjectMgmt.ResponseDTO;
+using System.Text.Json;
 
 namespace ProjectManagement.Controllers
 {
@@ -94,16 +95,81 @@ namespace ProjectManagement.Controllers
         {
             try
             {
-                // Save the task details using the provided DTO
-                await _taskManagementServices.SaveTaskDetail(taskManagementDTO);
-                // Return a success response
-                return Ok("Task saved successfully");
+                // Retrieve the task details by ID from the service
+                var taskDetails = await _taskManagementServices.GetTaskCount();
+                // Return the task details as a success response
+                return Ok(taskDetails);
             }
             catch (Exception ex)
             {
                 // Return an error response if an exception occurs during processing
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
+        }
+
+        // POST: api/TaskManagement/SaveTaskDetail
+        //[HttpPost("SaveTaskDetail")]
+        //public async Task<ActionResult> SaveTaskDetail(TaskManagementDTO taskManagementDTO)
+        //{
+        //    try
+        //    {
+        //        // Save the task details using the provided DTO
+        //        await _taskManagementServices.SaveTaskDetail(taskManagementDTO);
+        //        // Return a success response
+        //        return Ok("Task saved successfully");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Return an error response if an exception occurs during processing
+        //        return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        //    }
+        //}
+
+        [HttpPost("SaveTaskDetail")]
+        
+        public IActionResult SaveTasks([FromBody] JsonElement json)
+        {
+            // Convert JSON object to list of TaskManagementDTO
+            var tasks = new List<TaskManagementDTO>();
+
+            // Ensure the JSON object has a "tasks" property
+            if (json.TryGetProperty("tasks", out var tasksArray) && tasksArray.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var taskElement in tasksArray.EnumerateArray())
+                {
+                    var task = taskElement;
+
+                    var taskDto = new TaskManagementDTO
+                    {
+                        Signoff = task.GetProperty("Signoff").GetBoolean(),
+                        Title = task.GetProperty("title").GetString(),
+                        Description = task.GetProperty("description").GetString(),
+                        Status = task.GetProperty("status").GetString(),
+                        Deadline = "2",
+                        ProjectID = 1
+                        // Assign other properties as needed
+                    };
+                    tasks.Add(taskDto);
+                }
+
+                //await _taskManagementServices.SaveTaskDetail(taskManagementDTO);
+                if(tasks != null && tasks.Count > 0)
+                {
+                    _taskManagementServices.SaveTaskDetail(tasks);
+                }
+                
+
+            }
+            else
+            {
+                // Return bad request if the JSON object doesn't contain a "tasks" array
+                return BadRequest("Invalid JSON data: 'tasks' array not found.");
+            }
+
+            // Perform further operations with the list of tasks
+            // For example, save them to a database
+
+            return Ok("Tasks saved successfully");
         }
 
         // DELETE: api/TaskManagement/DeleteTaskById?id={id}

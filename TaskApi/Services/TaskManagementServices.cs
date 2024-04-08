@@ -110,84 +110,106 @@ namespace ProjectManagement.Services
             }
         }
 
-        public async Task<TaskManagementDTO> SaveTaskDetail(TaskManagementDTO taskManagementDTO)
+        public async Task<List<TaskManagementDTO>> SaveTaskDetail(List<TaskManagementDTO> taskManagementDTOs)
         {
+            var result = new List<TaskManagementDTO>();
+
             try
             {
-                // Check if taskManagementDTO is null
-                if (taskManagementDTO == null)
-                {  
-                    // Set default error response
-                    return new TaskManagementDTO { Status = "Task data is null." };
-                }
-
-                // Check if TaskID is zero (indicating a new task)
-                if (taskManagementDTO.TaskID == 0)
+                // Check if taskManagementDTOs is null or empty
+                if (taskManagementDTOs == null || !taskManagementDTOs.Any())
                 {
-                    // Save new task
-                    var newTask = new TaskManagement
+                    // Set default error response for each task
+                    foreach (var taskDto in taskManagementDTOs)
                     {
-                        Title = taskManagementDTO.Title,
-                        Deadline = taskManagementDTO.Deadline,
-                        ProjectID = taskManagementDTO.ProjectID,
-                        Status = taskManagementDTO.Status,
-                        Description = taskManagementDTO.Description
-                    };
-
-                    // Add new task to the database
-                    _unitOfWork.TaskManagement.Add(newTask);
-                    await _unitOfWork.SaveChangesAsync();
-
-                    // Return the saved task DTO
-                    return new TaskManagementDTO
-                    {
-                        TaskID = newTask.TaskID,
-                        Title = newTask.Title,
-                        Deadline = newTask.Deadline,
-                        ProjectID = newTask.ProjectID,
-                        Status = newTask.Status,
-                        Description = newTask.Description
-                    };
-                }
-                else
-                {
-                    // Update existing task
-                    var existingTask = await _unitOfWork.TaskManagement.FindAsync(taskManagementDTO.TaskID);
-                    if (existingTask == null)
-                    {
-                        // Set default error response if task is not found
-                        return new TaskManagementDTO { Status = $"Task with ID {taskManagementDTO.TaskID} not found." };
+                        result.Add(new TaskManagementDTO { Status = "Task data is null." });
                     }
-
-                    // Update task properties
-                    existingTask.Title = taskManagementDTO.Title;
-                    existingTask.Deadline = taskManagementDTO.Deadline;
-                    existingTask.ProjectID = taskManagementDTO.ProjectID;
-                    existingTask.Status = taskManagementDTO.Status;
-                    existingTask.Description = taskManagementDTO.Description;
-
-                    // Update task in the database
-                    _unitOfWork.TaskManagement.Update(existingTask);
-                    await _unitOfWork.SaveChangesAsync();
-
-                    // Return the updated task DTO
-                    return new TaskManagementDTO
-                    {
-                        TaskID = existingTask.TaskID,
-                        Title = existingTask.Title,
-                        Deadline = existingTask.Deadline,
-                        ProjectID = existingTask.ProjectID,
-                        Status = existingTask.Status,
-                        Description = existingTask.Description
-                    };
+                    return result;
                 }
+
+                foreach (var taskManagementDTO in taskManagementDTOs)
+                {
+                    // Check if TaskID is zero (indicating a new task)
+                    if (taskManagementDTO.TaskID == 0)
+                    {
+                        // Save new task
+                        var newTask = new TaskManagement
+                        {
+                            Title = taskManagementDTO.Title,
+                            Deadline = taskManagementDTO.Deadline,
+                            ProjectID = taskManagementDTO.ProjectID,
+                            Status = taskManagementDTO.Status,
+                            Description = taskManagementDTO.Description,
+                            Signoff = taskManagementDTO.Signoff
+                            
+                    };
+
+                        // Add new task to the database
+                        _unitOfWork.TaskManagement.Add(newTask);
+                        
+
+                        // Return the saved task DTO
+                        result.Add(new TaskManagementDTO
+                        {
+                            TaskID = newTask.TaskID,
+                            Title = newTask.Title,
+                            Deadline = newTask.Deadline,
+                            ProjectID = newTask.ProjectID,
+                            Status = newTask.Status,
+                            Description = newTask.Description,
+                            Signoff = newTask.Signoff
+                        });
+                    }
+                    else
+                    {
+                        // Update existing task
+                        var existingTask =  _unitOfWork.TaskManagement.Find(taskManagementDTO.TaskID);
+                        if (existingTask == null)
+                        {
+                            // Set default error response if task is not found
+                            result.Add(new TaskManagementDTO { Status = $"Task with ID {taskManagementDTO.TaskID} not found." });
+                            continue; // Move to the next task
+                        }
+
+                        // Update task properties
+                        existingTask.Title = taskManagementDTO.Title;
+                        existingTask.Deadline = taskManagementDTO.Deadline;
+                        existingTask.ProjectID = taskManagementDTO.ProjectID;
+                        existingTask.Status = taskManagementDTO.Status;
+                        existingTask.Description = taskManagementDTO.Description;
+                        existingTask.Signoff = taskManagementDTO.Signoff;
+
+                        // Update task in the database
+                        _unitOfWork.TaskManagement.Update(existingTask);
+                        _unitOfWork.SaveChanges();
+
+                        // Return the updated task DTO
+                        result.Add(new TaskManagementDTO
+                        {
+                            TaskID = existingTask.TaskID,
+                            Title = existingTask.Title,
+                            Deadline = existingTask.Deadline,
+                            ProjectID = existingTask.ProjectID,
+                            Status = existingTask.Status,
+                            Description = existingTask.Description,
+                            Signoff = existingTask.Signoff
+                        });
+                    }
+                }
+                _unitOfWork.SaveChanges();
+                return result;
             }
             catch (Exception ex)
             {
-                // Handle exceptions and set error response
-                return new TaskManagementDTO { Status = ex.Message };
+                // Handle exceptions and set error response for each task
+                foreach (var taskDto in taskManagementDTOs)
+                {
+                    result.Add(new TaskManagementDTO { Status = ex.Message });
+                }
+                return result;
             }
         }
+
 
         public async Task DeleteTaskById(int id)
         {

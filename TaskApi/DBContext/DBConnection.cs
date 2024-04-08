@@ -46,10 +46,10 @@ namespace ProjectManagement.DBContext
                 .IsRequired(); 
 
             
-            modelBuilder.Entity<ProjectMgmt>()
-                .HasMany(p => p.Tasks) 
-                .WithOne(t => t.Project) 
-                .HasForeignKey(t => t.ProjectID);
+            //modelBuilder.Entity<ProjectMgmt>()
+            //    .HasMany(p => p.Tasks) 
+            //    .WithOne(t => t.Project) 
+            //    .HasForeignKey(t => t.ProjectID);
 
 
        //     modelBuilder.Entity<CommentManagement>()
@@ -77,11 +77,11 @@ namespace ProjectManagement.DBContext
                 .Property(t => t.TaskID)
                 .ValueGeneratedOnAdd(); // Assuming TaskID is auto-generated
 
-            modelBuilder.Entity<TaskManagement>()
-                .HasOne(t => t.Project)
-                .WithMany(p => p.Tasks)
-                .HasForeignKey(t => t.ProjectID)
-                .IsRequired(); // Assuming the relationship is required
+            //modelBuilder.Entity<TaskManagement>()
+            //    .HasOne(t => t.Project)
+            //    .WithMany(p => p.Tasks)
+            //    .HasForeignKey(t => t.ProjectID)
+            //    .IsRequired(); // Assuming the relationship is required
         }
 
 

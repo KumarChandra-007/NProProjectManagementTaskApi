@@ -13,7 +13,8 @@ namespace ProjectManagement.Model
         public string Status { get; set; }
         public string Deadline { get; set; }
         public int ProjectID { get; set; }
-        [ForeignKey("ProjectID")]
-        public ProjectMgmt Project { get; set; } // Navigation property
+        //[ForeignKey("ProjectID")]
+        //public ProjectMgmt Project { get; set; } // Navigation property
+        public bool Signoff { get; set; }
     }
 }
